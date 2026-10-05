@@ -12,9 +12,10 @@ public class JobApplication {
         this.role = role;
         this.dateApplied = dateApplied;
         this.status = Status.APPLIED;
-        this.notes = "";
+        this.notes = notes;
     }
 
+    // Getter methods
     public String getCompany() {
         return this.company;
     }
@@ -31,13 +32,18 @@ public class JobApplication {
         return this.status;
     }
 
-    public String getNotes(){
-        return this.notes;
-    }
+    public String getNotes() { return this.notes; }
 
     public Status getStatus(){
         return this.status;
     }
+
+    // Setter methods
+    public void setStatus(Status status){ this.status = status; }
+
+    public void setRole(String role){ this.role = role; }
+
+    public void setDateApplied(LocalDate dateApplied){ this.dateApplied = dateApplied; }
 
     @Override
     public String toString(){
