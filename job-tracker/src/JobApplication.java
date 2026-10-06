@@ -11,7 +11,7 @@ public class JobApplication {
         this.company = company;
         this.role = role;
         this.dateApplied = dateApplied;
-        this.status = Status.APPLIED;
+        this.status = status;
         this.notes = notes;
     }
 
@@ -20,9 +20,7 @@ public class JobApplication {
         return this.company;
     }
 
-    public String getRole() {
-        return this.role;
-    }
+    public String getRole() { return this.role; }
 
     public LocalDate getDateApplied(){
         return this.dateApplied;
@@ -44,6 +42,8 @@ public class JobApplication {
     public void setRole(String role){ this.role = role; }
 
     public void setDateApplied(LocalDate dateApplied){ this.dateApplied = dateApplied; }
+
+    public void setNotes(String notes){ this.notes = notes; }
 
     @Override
     public String toString(){

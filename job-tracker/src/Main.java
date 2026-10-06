@@ -1,3 +1,4 @@
+import javax.swing.plaf.synth.SynthTableUI;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
@@ -13,7 +14,6 @@ public class Main {
     public static void main(String[] args) {
         applications = new ArrayList<>();
         boolean running = true;
-        int choice = 0;
 
         // Loop through menu until user picks quit
         //    1) Add an application
@@ -21,22 +21,7 @@ public class Main {
         //    3) Change status
         //    4) Quit
         while(running) {
-            System.out.println(); // Line buffer
-            System.out.println("1) Add Job Application");
-            System.out.println("2) List Job Applications");
-            System.out.println("3) Change Application Status");
-            System.out.println("4) Quit");
-            System.out.print("Enter your choice: ");
-
-            try {
-                choice = input.nextInt();
-                input.nextLine();
-            } catch (InputMismatchException e) {
-                System.out.println("Please enter a valid choice");
-                input.nextLine();
-            }
-
-            switch(choice){
+            switch(menu(input)){
                 case 1:
                     // Add job application
                     applications.add(addJobApplication(input));
@@ -53,10 +38,9 @@ public class Main {
                     break;
                 case 3:
                     // Change Job Status
-                    System.out.print("Enter name of Job you're wanting to change status for: ");
-                    String job = input.nextLine();
-                    changeApplicationStatus(job);
-                    System.out.print("Job status changed!");
+                    System.out.print("Enter name of Company you're wanting to change status for: ");
+                    String company = input.nextLine();
+                    changeApplicationStatus(company);
                     break;
                 case 4:
                     // Quit
@@ -64,7 +48,7 @@ public class Main {
                     running = false;
                     break;
                 default:
-                    System.out.println("Invalid choice");
+                    System.out.print("Invalid choice. Try again.");
                     break;
 
             }
@@ -80,22 +64,16 @@ public class Main {
         String role = scanner.nextLine();
 
         LocalDate dateApplied = LocalDate.now(); // Filler content
-        System.out.print("Date Applied (YYYY-MM-DD): ");
-        try {
-            dateApplied = LocalDate.parse(scanner.nextLine());
-        } catch (DateTimeParseException e) {
-            System.out.println("Please enter a valid date");
-            dateApplied = LocalDate.parse(scanner.nextLine());
-        }
+        LocalDate date = handleDate(input, dateApplied);
 
         System.out.print("Job Status: ");
-        String statusInput = scanner.nextLine();
-        Status status = Status.valueOf(statusInput.toUpperCase());  // Because Status is an enum, must convert the string input to enum
+        Status currentStatus = Status.APPLIED;
+        Status status = handleStatus(input, currentStatus);
 
         System.out.print("Job Notes: ");
         String notes = scanner.nextLine();
 
-        return new JobApplication(companyName, role, dateApplied, status, notes);
+        return new JobApplication(companyName, role, date, status, notes);
     }
 
     public static void listJobApplications(List<JobApplication> applications){
@@ -111,15 +89,69 @@ public class Main {
         }
     }
 
-    public static void changeApplicationStatus(String jobName){
+    public static void changeApplicationStatus(String companyName){
         for(JobApplication application: applications) {
-            if (application.getRole().equals(jobName)) {
+            if (application.getCompany().equalsIgnoreCase(companyName)) {
                 System.out.print("New status: ");
                 String statInput = input.nextLine();
                 Status newStatus = Status.valueOf(statInput.toUpperCase());
                 application.setStatus(newStatus);
+                System.out.print("Job status changed!");
+                return;
             }
         }
+        System.out.println("Job not found");
+    }
+
+    public static Integer menu(Scanner input){ // Error handling for the menu
+        System.out.println(); // Line buffer
+        System.out.println("1) Add Job Application");
+        System.out.println("2) List Job Applications");
+        System.out.println("3) Change Application Status");
+        System.out.println("4) Quit");
+        System.out.print("Enter your choice: ");
+        boolean needInput = true;
+        int choice = 0;
+
+        while (needInput) {
+            try {
+                choice = input.nextInt();
+                input.nextLine();
+                needInput = false;
+            } catch (InputMismatchException e) {
+                System.out.print("Invalid. Enter your choice: ");
+                input.nextLine();
+            }
+        }
+        return choice;
+    }
+
+    public static LocalDate handleDate(Scanner scanner, LocalDate date){ // Error handling for date input
+        boolean validDate = false;
+        while(!validDate) {
+            try {
+                System.out.print("Date Applied (YYYY-MM-DD): ");
+                date = LocalDate.parse(scanner.nextLine());
+                validDate = true;
+            } catch (DateTimeParseException e) {
+                System.out.print("Please enter a valid date (YYYY-MM-DD): ");
+            }
+        }
+        return date;
+    }
+
+    public static Status handleStatus(Scanner scanner, Status status){
+        boolean validStatus = false;
+        while(!validStatus) {
+            try {
+                String statusInput = scanner.nextLine();
+                status = Status.valueOf(statusInput.toUpperCase()); // Because Status is an enum, must convert the string input to enum
+                validStatus = true;
+            } catch (IllegalArgumentException e) {
+                System.out.print("Please enter a valid status: ");
+            }
+        }
+        return status;
     }
 
 
